@@ -1,56 +1,48 @@
-//Create variables here 
-var  dog, happyDog;
+var wall,thickness;
+var bullet,speed,weight;
 
-var database;
-var foodS, foodStock;
 
-function preload()
-{
-  dogImg = loadImage("images/dogImg.png");
-  dogImg1 = loadImage("images/dogImg1.png");
-	//load images here
-}
+
 
 function setup() {
-  createCanvas(500,500);
-  
-  dog = createSprite(250,250,10,10);
-  dog.addImage(dogImg)
-  
-  database = firebase.database();
+  createCanvas(1600,400);
+  bullet=createSprite(50, 200, 40, 15);
+  bullet.shapeColor = color("white");
+  wall= createSprite(1200, 200,thickness,height/2);
+  wall.shapeColor = color (80,80,80);
 
-  foodStock = database.ref('Food');
-  foodStock.on("value", readStock());
-
-    
+  bullet.velocityX = random(223,321);
+  bullet.collide(wall);
+ 
+ 
+  speed = random(223,321);
+  weight = random(30,52)
+  thickness = random(22,83)
 }
+function draw() {
+  background("yellow");  
+  if (hasCollided(bullet,wall)) 
+  {
+    bullet.velocityX = 0;
+    var damage = 0.5 * weight * speed * speed/(thickness * thickness * thickness);
 
 
-function draw() {  
-  background(46, 139, 87);
-  if(keyWentDown){
-    writeStock(foodS);
-    dog.addImage(dogImg1);
+    if (damage>10) {
+      wall.shapeColor = color(255,0,0)
+    }
+    if (damage<10) {
+      wall.shapeColor = color(0,255,0)
+    }
   }
-
   drawSprites();
-  //add styles here
-
 }
+function hasCollided(bullet, wall) {
+  bulletRightEdge=bullet.x + bullet.width;
+  wallLeftEdge=wall.x;
+  if(bulletRightEdge<=wallLeftEdge){
 
-function readStock(data){
-  foodS-data.val()
-}
-
-function writeStock (x){
-  if(x<=0){
-    x=0;
-  }else{
-    x=x-1;
+    return true
   }
 
-  database.ref('/').update({
-    Food: x 
-  })
+  return false;
 }
-
